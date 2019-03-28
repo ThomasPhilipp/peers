@@ -15,9 +15,18 @@
   </properties>
 
   <modules>
-    <module>peers-gui</module>
-    <module>peers-javaxsound</module>
     <module>peers-lib</module>
+    <module>peers-javaxsound</module>
+    <module>peers-gui</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>noTests</id>
+      <properties>
+        <maven.test.skip>true</maven.test.skip>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
