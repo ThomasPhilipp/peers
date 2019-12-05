@@ -34,6 +34,10 @@ import net.sourceforge.peers.sdp.Codec;
 /**
  * Based on example given at https://sourceforge.net/p/peers/discussion/683023/thread/89b94e85/
  * which extends the original implementation with a Jitter.
+ *
+ * Open points:
+ * -) capcity = 30. Is it to high?
+ * -) swapped timestamp in comparator. Is it the same in HMK?
  */
 public class IncomingRtpReader implements RtpListener {
 
@@ -91,7 +95,7 @@ public class IncomingRtpReader implements RtpListener {
                 int readPacketFailures = 0;
                 while(readPacketFailures < 3){
                     while( ( rtpPacket = jitBuffer.poll() ) != null ){
-                        System.out.println("[" + (new Date()).getTime() + "] " + "Playing packet with timestamp "+rtpPacket.getTimestamp());
+                        //System.out.println("[" + (new Date()).getTime() + "] " + "Playing packet with timestamp "+rtpPacket.getTimestamp());
                         playRtpPacket(rtpPacket);
                         lastTimestampPlayed = rtpPacket.getTimestamp();
                         readPacketFailures = 0;
@@ -124,7 +128,7 @@ public class IncomingRtpReader implements RtpListener {
 
         // Insert packet in queue
         jitBuffer.add(rtpPacket);
-        System.out.println("[" + (new Date()).getTime() + "] " + "Stored packet with timestamp  " + rtpPacket.getTimestamp() + " - QUEUE SIZE:" + jitBuffer.size());
+        //System.out.println("[" + (new Date()).getTime() + "] " + "Stored packet with timestamp  " + rtpPacket.getTimestamp() + " - QUEUE SIZE:" + jitBuffer.size());
         //once queue is large enough, let reader player send packets to soundManager
         if(!queueReady && jitBuffer.size() >= bufferMinSize){
             queueReady = true;
