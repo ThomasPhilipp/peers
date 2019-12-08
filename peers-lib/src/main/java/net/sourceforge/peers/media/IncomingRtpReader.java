@@ -95,7 +95,7 @@ public class IncomingRtpReader implements RtpListener {
                 int readPacketFailures = 0;
                 while(readPacketFailures < 3){
                     while( ( rtpPacket = jitBuffer.poll() ) != null ){
-                        //System.out.println("[" + (new Date()).getTime() + "] " + "Playing packet with timestamp "+rtpPacket.getTimestamp());
+                        System.out.println("[" + (new Date()).getTime() + "] " + "Playing packet with timestamp "+rtpPacket.getTimestamp());
                         playRtpPacket(rtpPacket);
                         lastTimestampPlayed = rtpPacket.getTimestamp();
                         readPacketFailures = 0;
@@ -120,15 +120,17 @@ public class IncomingRtpReader implements RtpListener {
         if(rtpPacket == null)
             return;
 
+        final long rtpPacketTimestampCustom = Math.abs(rtpPacket.getTimestamp());
+
         // Throw away packet if it is older than last packet played
-        if(lastTimestampPlayed > rtpPacket.getTimestamp()){
-            System.out.println("[" + (new Date()).getTime() + "] " + "Ignored packet with timestamp " + rtpPacket.getTimestamp() );
+        if(lastTimestampPlayed > rtpPacketTimestampCustom){
+            System.out.println("[" + (new Date()).getTime() + "] " + "Ignored packet with timestamp " + rtpPacketTimestampCustom );
             return;
         }
 
         // Insert packet in queue
         jitBuffer.add(rtpPacket);
-        //System.out.println("[" + (new Date()).getTime() + "] " + "Stored packet with timestamp  " + rtpPacket.getTimestamp() + " - QUEUE SIZE:" + jitBuffer.size());
+        System.out.println("[" + (new Date()).getTime() + "] " + "Stored packet with timestamp  " + rtpPacketTimestampCustom + " - QUEUE SIZE:" + jitBuffer.size());
         //once queue is large enough, let reader player send packets to soundManager
         if(!queueReady && jitBuffer.size() >= bufferMinSize){
             queueReady = true;
@@ -153,9 +155,9 @@ public class IncomingRtpReader implements RtpListener {
     class RtpPacketComparator implements Comparator<RtpPacket> {
         public int compare(RtpPacket p1, RtpPacket p2){
             if(p1.getTimestamp() > p2.getTimestamp())
-                return -1; // reverse to original
+                return -1;
             if(p1.getTimestamp() < p2.getTimestamp())
-                return 1; // reverse to original
+                return 1;
             return 0;
         }
     }
